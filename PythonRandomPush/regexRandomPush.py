@@ -21,42 +21,7 @@ java -mx4g -cp "*" edu.stanford.nlp.pipeline.StanfordCoreNLPServer
 
 ## Pass in the url of the server
 nlp = StanfordCoreNLP('http://localhost:9000')
-#
-# # Read input.
-# file = open('data/text.txt')
-# text = file.read()
-#
-# nlpSentenceSplit = nlp.annotate(text, properties = {
-#     'annotators': 'ssplit'
-# })
-#
-# print(nlpSentenceSplit['sentences'][0])
 
-
-########################################
-############ SOME TEST CODE ############
-########################################
-
-# # Test with text from https://github.com/smilli/py-corenlp
-# text = (
-#   'Pusheen and Smitha walked along the beach. '
-#   'Pusheen wanted to surf, but fell off the surfboard.')
-
-# file = open('data/classBios.txt')
-# inputText = file.read()
-# # print("filname is: {}".format(file))
-# # print(file.read())
-#
-# ## Seems like the text file is way too big, split sentences for every bio by itself
-# ## It seems like a valid separator would be "==>"
-#
-#
-#
-# jsonOutput = nlp.annotate(inputText, properties={
-#   'annotators': 'ssplit',
-#   'outputFormat': 'json'
-# })
-# print(jsonOutput)
 
 ## Read the text file.
 file = open('data/classBios2.txt')
@@ -78,18 +43,6 @@ listOfBios = listOfBios[1:]
 allBios = []
 print(len(listOfBios))
 
-
-# print(listOfBios) #### TEST
-# for bio in listOfBios:
-#
-#     output = nlp.annotate(bio, properties = {
-#         'annotators': 'ssplit',
-#         'outputFormat': 'json'
-#         })
-#     # print(type(listOfBios))
-#
-#     # print(bio)
-#     print(type(output))
 
 
 
@@ -167,6 +120,49 @@ timeWordsRegex = "time|period|date|long|short|quick(ly)?|slow(ly)?|minute(s)?|se
 # fullMonthDayYearRegex = r"October\s*0?1(st)?|2(nd)?|3(rd)?|[4-9](th)?"
 
 
+
+### Problematic regexes:
+"""
+monthAndYearRegex - fixed
+"""
+classBios_timepoints = ""
+count = 0
+for oneBio in allBios:
+    #print("****NEW BIO*****")
+    for eachSentence in oneBio:
+        ## let's try regexing:
+        for regex in (seasonsAndPeriodRegex,moreRelativeRegex,dayRegex,
+        dayMonthYearRegex,monthDayYearRegex,timeRegex,relativeTimeRegex,
+        daysRegex,timeWordsRegex, yearRegex, monthAndYearRegex):
+            if re.search(regex, eachSentence):
+                # print(eachSentence)
+                classBios_timepoints += eachSentence + "\n"
+                count = count + 1
+                break
+print("*** TIMEPOINTS *****")
+print(classBios_timepoints)
+print("There were {} timepoints".format(count))
+
+with open("classbios_timepoints.txt", "w") as text_file:
+    text_file.write(classBios_timepoints)
+
+
+###### TESTING INDIVIDUAL REGEXES
+# for oneBio in allBios[:5]:
+#     #print("****NEW BIO*****")
+#     for eachSentence in oneBio:
+#         ## let's try regexing:
+#         if re.search(yearRegex, eachSentence):
+#             print(eachSentence)
+#
+#
+
+
+
+################################################################################
+######################### SOME TEST CODE #######################################
+################################################################################
+
 # allRegexConcatenated =
 
 ### Join the regexes together
@@ -204,43 +200,6 @@ timeWordsRegex = "time|period|date|long|short|quick(ly)?|slow(ly)?|minute(s)?|se
 #                 break
 # print("*** TIMEPOINTS *****")
 # print(classBios_timepoints)
-
-### Problematic regeces:
-"""
-monthAndYearRegex - fixed
-"""
-classBios_timepoints = ""
-count = 0
-for oneBio in allBios:
-    #print("****NEW BIO*****")
-    for eachSentence in oneBio:
-        ## let's try regexing:
-        for regex in (seasonsAndPeriodRegex,moreRelativeRegex,dayRegex,
-        dayMonthYearRegex,monthDayYearRegex,timeRegex,relativeTimeRegex,
-        daysRegex,timeWordsRegex, yearRegex, monthAndYearRegex):
-            if re.search(regex, eachSentence):
-                # print(eachSentence)
-                classBios_timepoints += eachSentence + "\n"
-                count = count + 1
-                break
-print("*** TIMEPOINTS *****")
-print(classBios_timepoints)
-print("There were {} timepoints".format(count))
-
-with open("classbios_timepoints.txt", "w") as text_file:
-    text_file.write(classBios_timepoints)
-
-
-###### TESTING INDIVIDUAL REGEXES
-# for oneBio in allBios[:5]:
-#     #print("****NEW BIO*****")
-#     for eachSentence in oneBio:
-#         ## let's try regexing:
-#         if re.search(yearRegex, eachSentence):
-#             print(eachSentence)
-#
-#
-
 
 
 # for i in listOfBios[0:1]:
@@ -310,3 +269,37 @@ with open("classbios_timepoints.txt", "w") as text_file:
 #
 # #
 # # print(output[1])
+
+#
+# # Read input.
+# file = open('data/text.txt')
+# text = file.read()
+#
+# nlpSentenceSplit = nlp.annotate(text, properties = {
+#     'annotators': 'ssplit'
+# })
+#
+# print(nlpSentenceSplit['sentences'][0])
+
+
+
+# # Test with text from https://github.com/smilli/py-corenlp
+# text = (
+#   'Pusheen and Smitha walked along the beach. '
+#   'Pusheen wanted to surf, but fell off the surfboard.')
+
+# file = open('data/classBios.txt')
+# inputText = file.read()
+# # print("filname is: {}".format(file))
+# # print(file.read())
+#
+# ## Seems like the text file is way too big, split sentences for every bio by itself
+# ## It seems like a valid separator would be "==>"
+#
+#
+#
+# jsonOutput = nlp.annotate(inputText, properties={
+#   'annotators': 'ssplit',
+#   'outputFormat': 'json'
+# })
+# print(jsonOutput)
